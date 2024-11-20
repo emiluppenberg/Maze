@@ -13,6 +13,7 @@ namespace Maze
             {
                 var maze = builder.GenerateMaze(10, 20);
                 DisplayMaze(maze);
+                ai.SolveMaze(maze);
 
                 Console.ReadKey(true);
                 Console.Clear();

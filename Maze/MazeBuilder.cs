@@ -4,7 +4,7 @@ namespace Maze
     internal class MazeBuilder
     {
         private Random random = new Random();
-        private List<MazePoint> previousPoints;
+        private List<MazePoint> previousPoints = new List<MazePoint>();
         internal MazePoint[,] GenerateMaze(int yLength, int xLength)
         {
             var maze = new MazePoint[yLength, xLength];
@@ -20,12 +20,21 @@ namespace Maze
 
                     var emptyNeighborPoints = GetEmptyNeighborPoints(currentPoint, maze);
 
-                    MazePoint nextPoint = null;
+                    MazePoint? nextPoint = null;
+
+                    if (i == yLength - 1 && j == xLength - 1)
+                    {
+
+                        GenerateExitPoint(ref emptyNeighborPoints, ref currentPoint, ref maze);
+                        maze[currentPoint.Y, currentPoint.X] = currentPoint;
+                        break;
+                    }
 
                     if (emptyNeighborPoints.Count == 0)
                     {
                         BacktrackToEmptyNeighbor(ref emptyNeighborPoints, ref currentPoint, ref nextPoint, ref maze);
                     }
+
 
                     if (emptyNeighborPoints.Count > 0)
                     {
@@ -36,10 +45,41 @@ namespace Maze
                     {
                         ConnectPoints(ref currentPoint, ref nextPoint, ref maze);
                     }
+
                 }
             }
 
             return maze;
+        }
+
+        private void GenerateExitPoint(ref List<MazePoint> emptyNeighborPoints, ref MazePoint currentPoint, ref MazePoint[,] maze)
+        {
+            for (int i = previousPoints.Count - 1; i >= 0; i--)
+            {
+                currentPoint = previousPoints[random.Next(0, previousPoints.Count)];
+                emptyNeighborPoints = GetEmptyNeighborPoints(currentPoint, maze);
+
+                if (currentPoint.X == 0 && currentPoint.Walls.Count > 1)
+                {
+                    currentPoint.Walls.Remove("Left");
+                    return;
+                }
+                if (currentPoint.X == maze.GetLength(1) - 1 && currentPoint.Walls.Count > 1)
+                {
+                    currentPoint.Walls.Remove("Right");
+                    return;
+                }
+                if (currentPoint.Y == 0 && currentPoint.Walls.Count > 1)
+                {
+                    currentPoint.Walls.Remove("Up");
+                    return;
+                }
+                if (currentPoint.Y == maze.GetLength(0) - 1 && currentPoint.Walls.Count > 1)
+                {
+                    currentPoint.Walls.Remove("Down");
+                    return;
+                }
+            }
         }
 
         private void BacktrackToEmptyNeighbor(ref List<MazePoint> emptyNeighborPoints, ref MazePoint currentPoint, ref MazePoint? nextPoint, ref MazePoint[,] maze)

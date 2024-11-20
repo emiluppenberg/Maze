@@ -7,6 +7,7 @@ namespace Maze
         static void Main(string[] args)
         {
             var builder = new MazeBuilder();
+            var ai = new MazeAI();
 
             while (true)
             {
@@ -20,7 +21,6 @@ namespace Maze
 
         private static void DisplayMaze(MazePoint[,] maze)
         {
-
             for (int i = 0; i < maze.GetLength(0); i++)
             {
                 int charBuffer = 0;

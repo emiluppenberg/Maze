@@ -5,12 +5,12 @@ namespace Maze
     {
         private Random random = new Random();
         private List<MazePoint> previousPoints;
-        internal MazePoint[,] GenerateMaze(MazePoint start, int yLength, int xLength)
+        internal MazePoint[,] GenerateMaze(int yLength, int xLength)
         {
             var maze = new MazePoint[yLength, xLength];
 
             previousPoints = new List<MazePoint>();
-            var currentPoint = start;
+            var currentPoint = GenerateStartPoint(yLength, xLength);
 
             for (int i = 0; i < yLength; i++)
             {
@@ -58,21 +58,21 @@ namespace Maze
 
         private void ConnectPoints(ref MazePoint currentPoint, ref MazePoint nextPoint, ref MazePoint[,] maze)
         {
-            if (nextPoint.Connections.Contains("Up"))
+            if (!nextPoint.Walls.Contains("Up"))
             {
-                maze[currentPoint.Y, currentPoint.X].Connections.Add("Down");
+                maze[currentPoint.Y, currentPoint.X].Walls.Remove("Down");
             }
-            if (nextPoint.Connections.Contains("Right"))
+            if (!nextPoint.Walls.Contains("Right"))
             {
-                maze[currentPoint.Y, currentPoint.X].Connections.Add("Left");
+                maze[currentPoint.Y, currentPoint.X].Walls.Remove("Left");
             }
-            if (nextPoint.Connections.Contains("Down"))
+            if (!nextPoint.Walls.Contains("Down"))
             {
-                maze[currentPoint.Y, currentPoint.X].Connections.Add("Up");
+                maze[currentPoint.Y, currentPoint.X].Walls.Remove("Up");
             }
-            if (nextPoint.Connections.Contains("Left"))
+            if (!nextPoint.Walls.Contains("Left"))
             {
-                maze[currentPoint.Y, currentPoint.X].Connections.Add("Right");
+                maze[currentPoint.Y, currentPoint.X].Walls.Remove("Right");
             }
 
             previousPoints.Add(currentPoint);
@@ -90,7 +90,7 @@ namespace Maze
                     var emptyPoint = new MazePoint();
                     emptyPoint.Y = currentPoint.Y - 1;
                     emptyPoint.X = currentPoint.X;
-                    emptyPoint.Connections.Add("Down");
+                    emptyPoint.Walls.Remove("Down");
                     emptyNeighborPoints.Add(emptyPoint);
                 }
             }
@@ -101,7 +101,7 @@ namespace Maze
                     var emptyPoint = new MazePoint();
                     emptyPoint.Y = currentPoint.Y + 1;
                     emptyPoint.X = currentPoint.X;
-                    emptyPoint.Connections.Add("Up");
+                    emptyPoint.Walls.Remove("Up");
                     emptyNeighborPoints.Add(emptyPoint);
                 }
             }
@@ -112,7 +112,7 @@ namespace Maze
                     var emptyPoint = new MazePoint();
                     emptyPoint.Y = currentPoint.Y;
                     emptyPoint.X = currentPoint.X - 1;
-                    emptyPoint.Connections.Add("Right");
+                    emptyPoint.Walls.Remove("Right");
                     emptyNeighborPoints.Add(emptyPoint);
                 }
             }
@@ -123,7 +123,7 @@ namespace Maze
                     var emptyPoint = new MazePoint();
                     emptyPoint.Y = currentPoint.Y;
                     emptyPoint.X = currentPoint.X + 1;
-                    emptyPoint.Connections.Add("Left");
+                    emptyPoint.Walls.Remove("Left");
                     emptyNeighborPoints.Add(emptyPoint);
                 }
             }
@@ -141,11 +141,11 @@ namespace Maze
                 if (start.X > 0)
                 {
                     start.X = xLength - 1;
-                    start.Connections.Add("Right");
+                    start.Walls.Remove("Right");
                 }
                 else
                 {
-                    start.Connections.Add("Left");
+                    start.Walls.Remove("Left");
                 }
             }
             else
@@ -153,11 +153,11 @@ namespace Maze
                 start.X = random.Next(0, xLength);
                 if (start.Y > 0)
                 {
-                    start.Connections.Add("Down");
+                    start.Walls.Remove("Down");
                 }
                 if (start.Y == 0)
                 {
-                    start.Connections.Add("Up");
+                    start.Walls.Remove("Up");
                 }
             }
 

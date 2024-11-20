@@ -1,4 +1,6 @@
-﻿namespace Maze
+﻿using System.Drawing;
+
+namespace Maze
 {
     internal class Program
     {
@@ -6,25 +8,56 @@
         {
             var builder = new MazeBuilder();
 
-            var start = builder.GenerateStartPoint(10, 10);
-            var maze = builder.GenerateMaze(start, 10, 10);
+            while (true)
+            {
+                var maze = builder.GenerateMaze(10, 20);
+                DisplayMaze(maze);
 
-            Console.ReadKey();
+                Console.ReadKey(true);
+                Console.Clear();
+            }
         }
 
-        static void DisplayMaze(MazePoint[,] maze)
+        private static void DisplayMaze(MazePoint[,] maze)
         {
+
             for (int i = 0; i < maze.GetLength(0); i++)
             {
+                int charBuffer = 0;
+
                 for (int j = 0; j < maze.GetLength(1); j++)
                 {
-                    if (maze[i, j].Connections.Contains("Up"))
+                    if (maze[i, j].Walls.Contains("Up"))
                     {
-
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer, maze[i, j].Y + i);
+                        Console.Write("·-·");
+                    }
+                    if (maze[i, j].Walls.Contains("Right"))
+                    {
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer + 2, maze[i, j].Y + i);
+                        Console.Write("·");
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer + 2, maze[i, j].Y + 1 + i);
+                        Console.Write("|");
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer + 2, maze[i, j].Y + 2 + i);
+                        Console.Write("·");
+                    }
+                    if (maze[i, j].Walls.Contains("Down"))
+                    {
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer, maze[i, j].Y + 2 + i);
+                        Console.Write("·-·");
+                    }
+                    if (maze[i, j].Walls.Contains("Left"))
+                    {
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer, maze[i, j].Y + i);
+                        Console.Write("·");
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer, maze[i, j].Y + 1 + i);
+                        Console.Write("|");
+                        Console.SetCursorPosition(maze[i, j].X + charBuffer, maze[i, j].Y + 2 + i);
+                        Console.Write("·");
                     }
 
+                    charBuffer += 1;
                 }
-                Console.WriteLine();
             }
         }
     }

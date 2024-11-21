@@ -75,14 +75,14 @@ namespace Maze
                             Console.SetCursorPosition(ai.steps[s].X + charBuffer + 1, ai.steps[s].Y + 1 + i);
                             previousStepX = ai.steps[s].X + charBuffer + 1;
                             previousStepY = ai.steps[s].Y + 1 + i;
-                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
                             Console.Write("*");
                         }
                         charBuffer += 1;
                     }
                 }
 
-                Thread.Sleep(300);
+                Thread.Sleep(200);
             }
         }
 

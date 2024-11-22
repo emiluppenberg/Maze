@@ -25,9 +25,9 @@ namespace Maze
 
             while (true)
             {
+                var currentStep = steps[steps.Count - 1];
                 MazePoint? nextStep;
                 possibleSteps = GetPossibleSteps(maze);
-                var currentStep = steps[steps.Count - 1];
 
                 if (possibleSteps.Count == 0)
                 {
@@ -115,7 +115,9 @@ namespace Maze
 
         private void BacktrackToPreviousPossibleSteps()
         {
-            for (int i = previousPossibleSteps.Count - 1; i >= 0; i--)
+            var targetSteps = new List<MazePoint>();
+
+            for (int i = 0; i < previousPossibleSteps.Count; i++)
             {
                 var targetStep = steps.Find(
                     s =>
@@ -126,218 +128,73 @@ namespace Maze
 
                 if (targetStep != null)
                 {
-                    for (int j = steps.Count - 1; j >= 0; j--)
-                    {
-                        steps.Add(steps[j]);
-
-                        if (steps[j] == targetStep)
-                        {
-                            previousPossibleSteps.Remove(previousPossibleSteps[i]);
-                            return;
-                        }
-                        if (steps[j].Y == targetStep.Y - 1 && steps[j].X == targetStep.X && !targetStep.Walls.Contains("Up"))
-                        {
-                            steps.Add(targetStep);
-                            previousPossibleSteps.Remove(previousPossibleSteps[i]);
-                            return;
-                        }
-                        if (steps[j].Y == targetStep.Y + 1 && steps[j].X == targetStep.X && !targetStep.Walls.Contains("Down"))
-                        {
-                            steps.Add(targetStep);
-                            previousPossibleSteps.Remove(previousPossibleSteps[i]);
-                            return;
-                        }
-                        if (steps[j].X == targetStep.X - 1 && steps[j].Y == targetStep.Y && !targetStep.Walls.Contains("Left"))
-                        {
-                            steps.Add(targetStep);
-                            previousPossibleSteps.Remove(previousPossibleSteps[i]);
-                            return;
-                        }
-                        if (steps[j].X == targetStep.X + 1 && steps[j].Y == targetStep.Y && !targetStep.Walls.Contains("Right"))
-                        {
-                            steps.Add(targetStep);
-                            previousPossibleSteps.Remove(previousPossibleSteps[i]);
-                            return;
-                        }
-                    }
+                    targetSteps.Add(targetStep);
                 }
             }
-            //if (currentStepY - 1 >= 0)
-            //{
-            //    if (!maze[currentStepY - 1, currentStepX].Walls.Contains("Down"))
-            //    {
-            //        if (previousPossibleSteps.Contains(maze[currentStepY - 1, currentStepX]))
-            //        {
-            //            possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
-            //        }
-            //        if (steps.Contains(maze[currentStepY - 1, currentStepX]))
-            //        {
-            //            if (currentStepY - 2 >= 0)
-            //            {
-            //                if (!maze[currentStepY - 2, currentStepX].Walls.Contains("Down"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY - 2, currentStepX]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
-            //                    }
-            //                }
-            //            }
-            //            if (currentStepX - 1 >= 0)
-            //            {
-            //                if (!maze[currentStepY - 1, currentStepX - 1].Walls.Contains("Right"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY - 1, currentStepX - 1]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
-            //                    }
-            //                }
-            //            }
-            //            if (currentStepX + 1 < maze.GetLength(1))
-            //            {
-            //                if (!maze[currentStepY - 1, currentStepX + 1].Walls.Contains("Left"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY - 1, currentStepX + 1]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //if (currentStepY + 1 < maze.GetLength(0))
-            //{
-            //    if (!maze[currentStepY + 1, currentStepX].Walls.Contains("Up"))
-            //    {
-            //        if (!steps.Contains(maze[currentStepY + 1, currentStepX]))
-            //        {
-            //            possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
-            //        }
-            //    }
-            //    if (steps.Contains(maze[currentStepY + 1, currentStepX]))
-            //    {
-            //        if (currentStepY + 2 < maze.GetLength(0))
-            //        {
-            //            if (!maze[currentStepY + 2, currentStepX].Walls.Contains("Up"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY + 2, currentStepX]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
-            //                }
-            //            }
-            //        }
-            //        if (currentStepX - 1 >= 0)
-            //        {
-            //            if (!maze[currentStepY + 1, currentStepX - 1].Walls.Contains("Right"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY + 1, currentStepX - 1]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
-            //                }
-            //            }
-            //        }
-            //        if (currentStepX + 1 < maze.GetLength(1))
-            //        {
-            //            if (!maze[currentStepY + 1, currentStepX + 1].Walls.Contains("Left"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY + 1, currentStepX + 1]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //if (currentStepX - 1 >= 0)
-            //{
-            //    if (!maze[currentStepY, currentStepX - 1].Walls.Contains("Right"))
-            //    {
-            //        if (!steps.Contains(maze[currentStepY, currentStepX - 1]))
-            //        {
-            //            possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
-            //        }
-            //    }
-            //    if (steps.Contains(maze[currentStepY, currentStepX - 1]))
-            //    {
-            //        if (currentStepX - 2 >= 0)
-            //        {
-            //            if (!maze[currentStepY, currentStepX - 2].Walls.Contains("Right"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY, currentStepX - 2]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
-            //                }
-            //            }
-            //        }
-            //        if (currentStepY - 1 >= 0)
-            //        {
-            //            if (!maze[currentStepY - 1, currentStepX - 1].Walls.Contains("Down"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY - 1, currentStepX - 1]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
-            //                }
-            //            }
-            //        }
-            //        if (currentStepY + 1 < maze.GetLength(0))
-            //        {
-            //            if (!maze[currentStepY + 1, currentStepX - 1].Walls.Contains("Up"))
-            //            {
-            //                if (!steps.Contains(maze[currentStepY + 1, currentStepX - 1]))
-            //                {
-            //                    possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //if (currentStepX + 1 < maze.GetLength(1))
-            //{
-            //    if (!maze[currentStepY, currentStepX + 1].Walls.Contains("Left"))
-            //    {
-            //        if (!steps.Contains(maze[currentStepY, currentStepX + 1]))
-            //        {
-            //            possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
-            //        }
-            //        if (steps.Contains(maze[currentStepY, currentStepX + 1]))
-            //        {
-            //            if (currentStepX + 2 < maze.GetLength(1))
-            //            {
-            //                if (!maze[currentStepY, currentStepX + 2].Walls.Contains("Left"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY, currentStepX + 2]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
-            //                    }
-            //                }
-            //            }
-            //            if (currentStepY - 1 >= 0)
-            //            {
-            //                if (!maze[currentStepY - 1, currentStepX + 1].Walls.Contains("Down"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY - 1, currentStepX + 1]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
-            //                    }
-            //                }
-            //            }
-            //            if (currentStepY + 1 < maze.GetLength(0))
-            //            {
-            //                if (!maze[currentStepY + 1, currentStepX + 1].Walls.Contains("Up"))
-            //                {
-            //                    if (!steps.Contains(maze[currentStepY + 1, currentStepX + 1]))
-            //                    {
-            //                        possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //if (possibleSteps.Count > 0)
-            //{
-            //    return;
-            //}
+
+            for (int i = steps.Count - 1; i >= 0; i--)
+            {
+                if (i != steps.Count - 1)
+                {
+                    steps.Add(steps[i]);
+                }
+
+                var currentStep = steps[i];
+
+                for (int j = 0; j < targetSteps.Count; j++) // Work here
+                {
+                    var upStep = steps.Find(s => (s.Y == steps[i].Y - 1 && s.X == steps[i].X && !s.Walls.Contains("Down")));
+                    var downStep = steps.Find(s => (s.Y == steps[i].Y + 1 && s.X == steps[i].X && !s.Walls.Contains("Up")));
+                    var leftStep = steps.Find(s => (s.X == steps[i].X - 1 && s.Y == steps[i].Y && !s.Walls.Contains("Right")));
+                    var rightStep = steps.Find(s => (s.X == steps[i].X + 1 && s.Y == steps[i].Y && !s.Walls.Contains("Left")));
+
+                    if (upStep != null && steps.IndexOf(upStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(upStep))
+                    {
+                        i = steps.IndexOf(upStep);
+                        steps.Add(steps[i]);
+                    }
+                    if (downStep != null && steps.IndexOf(downStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(downStep))
+                    {
+                        i = steps.IndexOf(downStep);
+                        steps.Add(steps[i]);
+                    }
+                    if (leftStep != null && steps.IndexOf(leftStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(leftStep))
+                    {
+                        i = steps.IndexOf(leftStep);
+                        steps.Add(steps[i]);
+                    }
+                    if (rightStep != null && steps.IndexOf(rightStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(rightStep))
+                    {
+                        i = steps.IndexOf(rightStep);
+                        steps.Add(steps[i]);
+                    }
+                    if (steps[i] == targetSteps[j])
+                    {
+                        return;
+                    }
+                    if (steps[i].Y == targetSteps[j].Y - 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Up"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        return;
+                    }
+                    if (steps[i].Y == targetSteps[j].Y + 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Down"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        return;
+                    }
+                    if (steps[i].X == targetSteps[j].X - 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Left"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        return;
+                    }
+                    if (steps[i].X == targetSteps[j].X + 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Right"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        return;
+                    }
+
+                }
+            }
         }
 
         private List<MazePoint> GetPossibleSteps(MazePoint[,] maze)
@@ -353,7 +210,11 @@ namespace Maze
                     if (!steps.Contains(maze[currentStepY - 1, currentStepX]))
                     {
                         possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
-                        previousPossibleSteps.Add(maze[currentStepY - 1, currentStepX]);
+
+                        if (!previousPossibleSteps.Contains(maze[currentStepY - 1, currentStepX]))
+                        {
+                            previousPossibleSteps.Insert(0, maze[currentStepY - 1, currentStepX]);
+                        }
                     }
                 }
             }
@@ -364,7 +225,11 @@ namespace Maze
                     if (!steps.Contains(maze[currentStepY + 1, currentStepX]))
                     {
                         possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
-                        previousPossibleSteps.Add(maze[currentStepY + 1, currentStepX]);
+
+                        if (!previousPossibleSteps.Contains(maze[currentStepY + 1, currentStepX]))
+                        {
+                            previousPossibleSteps.Insert(0, maze[currentStepY + 1, currentStepX]);
+                        }
                     }
                 }
             }
@@ -375,7 +240,11 @@ namespace Maze
                     if (!steps.Contains(maze[currentStepY, currentStepX - 1]))
                     {
                         possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
-                        previousPossibleSteps.Add(maze[currentStepY, currentStepX - 1]);
+
+                        if (!previousPossibleSteps.Contains(maze[currentStepY, currentStepX - 1]))
+                        {
+                            previousPossibleSteps.Insert(0, maze[currentStepY, currentStepX - 1]);
+                        }
                     }
                 }
             }
@@ -386,7 +255,11 @@ namespace Maze
                     if (!steps.Contains(maze[currentStepY, currentStepX + 1]))
                     {
                         possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
-                        previousPossibleSteps.Add(maze[currentStepY, currentStepX + 1]);
+
+                        if (!previousPossibleSteps.Contains(maze[currentStepY, currentStepX + 1]))
+                        {
+                            previousPossibleSteps.Insert(0, maze[currentStepY, currentStepX + 1]);
+                        }
                     }
                 }
             }

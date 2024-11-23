@@ -32,7 +32,10 @@ namespace Maze
                 if (possibleSteps.Count == 0)
                 {
                     BacktrackToPreviousPossibleSteps();
-                    possibleSteps = GetPossibleSteps(maze);
+                    if (possibleSteps.Count == 0)
+                    {
+                        possibleSteps = GetPossibleSteps(maze);
+                    }
                 }
 
                 if (possibleSteps.Any(s => s.IsExit == true))
@@ -143,6 +146,42 @@ namespace Maze
 
                 for (int j = 0; j < targetSteps.Count; j++) // Work here
                 {
+                    if (steps[i].Y == targetSteps[j].Y - 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Up"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        if (previousPossibleSteps.Count < 2)
+                        {
+                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                        }
+                        return;
+                    }
+                    if (steps[i].Y == targetSteps[j].Y + 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Down"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        if (previousPossibleSteps.Count < 2)
+                        {
+                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                        }
+                        return;
+                    }
+                    if (steps[i].X == targetSteps[j].X - 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Left"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        if (previousPossibleSteps.Count < 2)
+                        {
+                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                        }
+                        return;
+                    }
+                    if (steps[i].X == targetSteps[j].X + 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Right"))
+                    {
+                        steps.Add(targetSteps[j]);
+                        if (previousPossibleSteps.Count < 2)
+                        {
+                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                        }
+                        return;
+                    }
                     var upStep = steps.Find(s => (s.Y == steps[i].Y - 1 && s.X == steps[i].X && !s.Walls.Contains("Down")));
                     var downStep = steps.Find(s => (s.Y == steps[i].Y + 1 && s.X == steps[i].X && !s.Walls.Contains("Up")));
                     var leftStep = steps.Find(s => (s.X == steps[i].X - 1 && s.Y == steps[i].Y && !s.Walls.Contains("Right")));
@@ -168,31 +207,14 @@ namespace Maze
                         i = steps.IndexOf(rightStep);
                         steps.Add(steps[i]);
                     }
-                    if (steps[i] == targetSteps[j])
+                    if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
                     {
+                        if (previousPossibleSteps.Count < 2)
+                        {
+                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                        }
                         return;
                     }
-                    if (steps[i].Y == targetSteps[j].Y - 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Up"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        return;
-                    }
-                    if (steps[i].Y == targetSteps[j].Y + 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Down"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        return;
-                    }
-                    if (steps[i].X == targetSteps[j].X - 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Left"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        return;
-                    }
-                    if (steps[i].X == targetSteps[j].X + 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Right"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        return;
-                    }
-
                 }
             }
         }

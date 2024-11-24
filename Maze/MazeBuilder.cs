@@ -24,10 +24,15 @@ namespace Maze
 
                     if (i == yLength - 1 && j == xLength - 1)
                     {
-
-                        GenerateExitPoint(ref emptyNeighborPoints, ref currentPoint, ref maze);
-                        maze[currentPoint.Y, currentPoint.X] = currentPoint;
-                        break;
+                        while (true)
+                        {
+                            GenerateExitPoint(ref emptyNeighborPoints, ref currentPoint, ref maze);
+                            if (currentPoint.IsStart != true)
+                            {
+                                maze[currentPoint.Y, currentPoint.X] = currentPoint;
+                                break;
+                            }
+                        }
                     }
 
                     if (emptyNeighborPoints.Count == 0)

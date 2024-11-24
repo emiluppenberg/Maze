@@ -47,73 +47,24 @@ namespace Maze
 
                 if (possibleSteps.Count == 0)
                 {
+                    foreach (var point in maze)
+                    {
+                        if (point.IsExit == true)
+                        {
+                            nextStep = point;
+                        }
+                    }
                     BacktrackToPreviousPossibleSteps();
                     possibleSteps = GetPossibleSteps(maze);
+                    break;
                 }
 
+                
                 nextStep = possibleSteps[random.Next(0, possibleSteps.Count)];
                 possibleSteps.Remove(nextStep);
                 steps.Add(nextStep);
                 previousPossibleSteps.Remove(nextStep);
             }
-        }
-
-        private List<MazePoint> FindClosestPossibleSteps(MazePoint[,] maze)
-        {
-            var possibleSteps = new List<MazePoint>();
-            MazePoint? nextStep;
-            var currentStepY = steps[steps.Count - 1].Y;
-            var currentStepX = steps[steps.Count - 1].X;
-            int closestY = previousPossibleSteps[previousPossibleSteps.Count - 1].Y;
-            int closestX = previousPossibleSteps[previousPossibleSteps.Count - 1].X;
-
-            for (int j = previousPossibleSteps.Count - 1; j >= 0; j--)
-            {
-                var differenceY = Math.Abs(currentStepY - previousPossibleSteps[j].Y);
-                var differenceX = Math.Abs(currentStepX - previousPossibleSteps[j].X);
-
-                if (differenceY <= closestY)
-                {
-                    if (differenceX <= closestX)
-                    {
-                        closestY = previousPossibleSteps[j].Y;
-                        closestX = previousPossibleSteps[j].X;
-                    }
-                }
-            }
-
-            nextStep = previousPossibleSteps.FirstOrDefault(s => s.Y == closestY && s.X == closestX);
-            possibleSteps.Add(nextStep);
-
-            return possibleSteps;
-            //    var possibleSteps = new List<MazePoint>();
-            //    int closestY = steps[steps.Count - 1].Y;
-            //    int closestX = steps[steps.Count - 1].X;
-
-            //    for (int i = previousPossibleSteps.Count - 1; i >= 0; i--)
-            //    {
-            //        if (steps[steps.Count - 1].Y - previousPossibleSteps[i].Y < closestY)
-            //        {
-            //            closestY = previousPossibleSteps[i].Y;
-            //        }
-            //        if (steps[steps.Count - 1].X - previousPossibleSteps[i].X < closestX)
-            //        {
-            //            closestX = previousPossibleSteps[i].X;
-            //        }
-            //    }
-
-            //    for (int i = 0; i < maze.GetLength(0); i++)
-            //    {
-            //        for (int j = 0; j < maze.GetLength(1); j++)
-            //        {
-            //            if (maze[i, j].Y == closestY && maze[i, j].X == closestX)
-            //            {
-            //                possibleSteps.Add(maze[i, j]);
-            //            }
-            //        }
-            //    }
-
-            //    return possibleSteps;
         }
 
         private void BacktrackToPreviousPossibleSteps()

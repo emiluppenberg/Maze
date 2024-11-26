@@ -11,17 +11,51 @@ namespace Maze
 
             while (true)
             {
-                var maze = builder.GenerateMaze(10, 20);
-                DisplayMaze(maze);
-                ai.SolveMaze(maze);
-                DisplayMazeAndAI(maze, ai);
+                bool loop = true;
 
-                Console.ReadKey(true);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("Maze size X: ");
+                int xSize = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Maze size Y: ");
+                int ySize = Convert.ToInt32(Console.ReadLine());
+                Console.Write("AI speed: ");
+                int aiSpeed = Convert.ToInt32(Console.ReadLine());
                 Console.Clear();
+
+                var maze = builder.GenerateMaze(ySize, xSize);
+                ai.SolveMaze(maze);
+                DisplayMazeAndAI(maze, ai, aiSpeed);
+
+
+                while (loop)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(
+                        "\nPress 1 - Repeat maze\n" +
+                        "Press 0 - Exit program\n" +
+                        "Any other key - New maze\n");
+
+                    switch (Console.ReadKey(true).KeyChar)
+                    {
+                        case '1':
+                            Console.Write("AI speed: ");
+                            aiSpeed = Convert.ToInt32(Console.ReadLine());
+                            Console.Clear();
+                            DisplayMazeAndAI(maze, ai, aiSpeed);
+                            break;
+                        case '0':
+                            Environment.Exit(0);
+                            break;
+                        default:
+                            Console.Clear();
+                            loop = false;
+                            break;
+                    }
+                }
             }
         }
 
-        private static void DisplayMazeAndAI(MazePoint[,] maze, MazeAI ai)
+        private static void DisplayMazeAndAI(MazePoint[,] maze, MazeAI ai, int speed)
         {
             int previousStepY = 0;
             int previousStepX = 0;
@@ -82,7 +116,7 @@ namespace Maze
                     }
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(speed);
             }
         }
 

@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using Maze.DataAccess.Data;
+using Maze.DataAccess.Models;
 
 namespace Maze
 {
@@ -6,6 +8,7 @@ namespace Maze
     {
         static void Main(string[] args)
         {
+            var context = new MazeDbContext();
             var builder = new MazeBuilder();
             var ai = new MazeAI();
 
@@ -14,25 +17,28 @@ namespace Maze
                 bool loop = true;
 
                 Console.ForegroundColor = ConsoleColor.White;
+
                 Console.Write("Maze size X: ");
                 int xSize = Convert.ToInt32(Console.ReadLine());
+
                 Console.Write("Maze size Y: ");
                 int ySize = Convert.ToInt32(Console.ReadLine());
+
                 Console.Write("AI speed: ");
                 int aiSpeed = Convert.ToInt32(Console.ReadLine());
+
                 Console.Clear();
 
                 var maze = builder.GenerateMaze(ySize, xSize);
                 ai.SolveMaze(maze);
                 DisplayMazeAndAI(maze, ai, aiSpeed);
 
-
                 while (loop)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write(
-                        "\nPress 1 - Repeat maze\n" +
-                        "Press 0 - Exit program\n" +
+                        "\nPress 1 - Save data\n" +
+                        "Press 2 - View data\n" +
                         "Any other key - New maze\n");
 
                     switch (Console.ReadKey(true).KeyChar)

@@ -9,7 +9,7 @@ using System.Drawing.Text;
 
 namespace Maze
 {
-    internal class MazeAI
+    public class MazeAI
     {
         private Random random = new Random();
         public List<MazePoint> steps = new List<MazePoint>();

@@ -5,6 +5,7 @@ namespace Maze
     {
         private Random random = new Random();
         private List<MazePoint> previousPoints = new List<MazePoint>();
+
         internal MazePoint[,] GenerateMaze(int yLength, int xLength)
         {
             var maze = new MazePoint[yLength, xLength];
@@ -40,7 +41,6 @@ namespace Maze
                         BacktrackToEmptyNeighbor(ref emptyNeighborPoints, ref currentPoint, ref nextPoint, ref maze);
                     }
 
-
                     if (emptyNeighborPoints.Count > 0)
                     {
                         nextPoint = emptyNeighborPoints[random.Next(0, emptyNeighborPoints.Count)];
@@ -50,7 +50,6 @@ namespace Maze
                     {
                         ConnectPoints(ref currentPoint, ref nextPoint, ref maze);
                     }
-
                 }
             }
 

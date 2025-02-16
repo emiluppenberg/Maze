@@ -1,78 +1,76 @@
-﻿using Maze.DataAccess.Data;
-using Maze.DataAccess.Models;
-
-namespace Maze
+﻿namespace Maze
 {
     public class MazeUserInterface
     {
-        private MazeDataRepository mazeDataRepository;
-
-        public MazeUserInterface(MazeDataRepository mazeDataRepository)
+        public int InputXSize()
         {
-            this.mazeDataRepository = mazeDataRepository;
-        }
-
-        public void Menu()
-        {
-            bool menu = true;
-
-            while (menu)
-            {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(
-                    "\nPress 1 - New maze\n" +
-                    "Press 2 - View data\n" +
-                    "Any other key - Exit program\n");
-
-                switch (Console.ReadKey(true).KeyChar)
-                {
-                    case '1':
-                        menu = false;
-                        break;
-                    case '2':
-                        ViewDataMenu();
-                        break;
-                    default:
-                        Environment.Exit(0);
-                        break;
-                }
-            }
-        }
-        public void ViewDataMenu()
-        {
-            var mazeSizes = mazeDataRepository.AllMazeSizes();
-
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Maze size (X, Y)");
-                for (int i = 0; i < mazeSizes.Count; i++)
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("Maze size X: ");
+
+                if (int.TryParse(Console.ReadLine(), out int xSize))
                 {
-                    Console.Write($"Press {i + 1} - {mazeSizes[i].XLength}, {mazeSizes[i].YLength}\n");
+                    if (xSize < Console.BufferWidth / 2)
+                    {
+                        return xSize;
+                    }
+
+                    Console.WriteLine("Maze cannot be larger than window");
                 }
 
-                if (int.TryParse(Console.ReadLine(), out int input))
-                {
-                    if (input <= mazeSizes.Count && input > 0)
-                    {
-                        var mazeData = mazeDataRepository.GetAllByMazeSize
-                            (mazeSizes[input - 1].YLength, mazeSizes[input - 1].XLength);
-                        ViewMazeSize(mazeData);
-                        break;
-                    }
-                }
+                Console.WriteLine("Invalid input");
+                System.Threading.Thread.Sleep(1000);
             }
         }
-        public void ViewMazeSize(List<MazeData> mazeData)
+
+        public int InputYSize()
         {
-            Console.Clear();
-            foreach (var data in mazeData)
+            while (true)
             {
-                Console.Write($"MazeID: {data.MazeDataId} | AIID: {data.AIDataId} | AISteps: {data.MyAIData.Steps}\n");
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("Maze size Y: ");
+
+                if (int.TryParse(Console.ReadLine(), out int ySize))
+                {
+                    if (ySize < Console.BufferHeight / 2)
+                    {
+                        return ySize;
+                    }
+
+                    Console.WriteLine("Maze cannot be larger than window");
+                }
+
+                Console.WriteLine("Invalid input");
+                System.Threading.Thread.Sleep(1000);
             }
-            Console.ReadKey(true);
         }
+
+        public int InputSpeed()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("(Less is faster) Speed: ");
+
+                if (int.TryParse(Console.ReadLine(), out int speed))
+                {
+                    if (speed > 0)
+                    {
+                        return speed;
+                    }
+
+                    Console.WriteLine("Speed must be greater than 0");
+                }
+
+                Console.WriteLine("Invalid input");
+                System.Threading.Thread.Sleep(1000);
+            }
+        }
+
         public void DisplayMazeAndAI(MazePoint[,] maze, MazeAI ai, int speed)
         {
             int previousStepY = 0;
@@ -136,22 +134,10 @@ namespace Maze
 
                 Thread.Sleep(speed);
             }
-        }
-        public void SaveData(int ySize, int xSize, int steps)
-        {
-            var aiData = new AIData()
-            {
-                Steps = steps
-            };
-            var mazeData = new MazeData()
-            {
-                XLength = xSize,
-                YLength = ySize,
-                MyAIData = aiData
-            };
 
-            mazeDataRepository.Add(mazeData);
-            mazeDataRepository.SaveChanges();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nPress any key to continue");
+            Console.ReadKey(true);
         }
     }
 }

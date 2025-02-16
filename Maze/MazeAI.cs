@@ -9,33 +9,28 @@ using System.Drawing.Text;
 
 namespace Maze
 {
-    internal class MazeAI
+    public class MazeAI
     {
         private Random random = new Random();
-        private List<MazePoint> possibleSteps = new List<MazePoint>();
-        private List<MazePoint> previousPossibleSteps = new List<MazePoint>();
         public List<MazePoint> steps = new List<MazePoint>();
         public void SolveMaze(MazePoint[,] maze)
         {
-            var startingPoint = FindStartingPoint(maze);
-            previousPossibleSteps.Clear();
             steps.Clear();
-            possibleSteps.Clear();
+            var startingPoint = EnterMaze(maze);
+            var previousPossibleSteps = new List<MazePoint>();
             steps.Add(startingPoint);
 
             while (true)
             {
                 var currentStep = steps[steps.Count - 1];
                 MazePoint? nextStep;
-                possibleSteps = GetPossibleSteps(maze);
+                var possibleSteps = GetPossibleSteps(maze, ref previousPossibleSteps);
 
                 if (possibleSteps.Count == 0)
                 {
-                    BacktrackToPreviousPossibleSteps();
-                    if (possibleSteps.Count == 0)
-                    {
-                        possibleSteps = GetPossibleSteps(maze);
-                    }
+                    var targetSteps = GetTargetSteps(previousPossibleSteps);
+                    BacktrackToTargetStep(targetSteps);
+                    possibleSteps = GetPossibleSteps(maze, ref previousPossibleSteps);
                 }
 
                 if (possibleSteps.Any(s => s.IsExit == true))
@@ -45,29 +40,13 @@ namespace Maze
                     break;
                 }
 
-                if (possibleSteps.Count == 0)
-                {
-                    foreach (var point in maze)
-                    {
-                        if (point.IsExit == true)
-                        {
-                            nextStep = point;
-                        }
-                    }
-                    BacktrackToPreviousPossibleSteps();
-                    possibleSteps = GetPossibleSteps(maze);
-                    break;
-                }
-
-                
                 nextStep = possibleSteps[random.Next(0, possibleSteps.Count)];
-                possibleSteps.Remove(nextStep);
                 steps.Add(nextStep);
                 previousPossibleSteps.Remove(nextStep);
             }
         }
 
-        private void BacktrackToPreviousPossibleSteps()
+        private List<MazePoint> GetTargetSteps(List<MazePoint> previousPossibleSteps)
         {
             var targetSteps = new List<MazePoint>();
 
@@ -86,152 +65,144 @@ namespace Maze
                 }
             }
 
+            return targetSteps;
+        }
+
+        private void BacktrackToTargetStep(List<MazePoint> targetSteps)
+        {
             for (int i = steps.Count - 1; i >= 0; i--)
             {
+
                 if (i != steps.Count - 1)
                 {
                     steps.Add(steps[i]);
+
+                    if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
+                    {
+                        return;
+                    }
                 }
 
                 var currentStep = steps[i];
 
-                for (int j = 0; j < targetSteps.Count; j++) // Work here
+                for (int j = 0; j < targetSteps.Count; j++)
                 {
-                    if (steps[i].Y == targetSteps[j].Y - 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Up"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        if (previousPossibleSteps.Count < 2)
-                        {
-                            possibleSteps.Insert(0, previousPossibleSteps[j]);
-                        }
-                        return;
-                    }
-                    if (steps[i].Y == targetSteps[j].Y + 1 && steps[i].X == targetSteps[j].X && !targetSteps[j].Walls.Contains("Down"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        if (previousPossibleSteps.Count < 2)
-                        {
-                            possibleSteps.Insert(0, previousPossibleSteps[j]);
-                        }
-                        return;
-                    }
-                    if (steps[i].X == targetSteps[j].X - 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Left"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        if (previousPossibleSteps.Count < 2)
-                        {
-                            possibleSteps.Insert(0, previousPossibleSteps[j]);
-                        }
-                        return;
-                    }
-                    if (steps[i].X == targetSteps[j].X + 1 && steps[i].Y == targetSteps[j].Y && !targetSteps[j].Walls.Contains("Right"))
-                    {
-                        steps.Add(targetSteps[j]);
-                        if (previousPossibleSteps.Count < 2)
-                        {
-                            possibleSteps.Insert(0, previousPossibleSteps[j]);
-                        }
-                        return;
-                    }
-                    var upStep = steps.Find(s => (s.Y == steps[i].Y - 1 && s.X == steps[i].X && !s.Walls.Contains("Down")));
-                    var downStep = steps.Find(s => (s.Y == steps[i].Y + 1 && s.X == steps[i].X && !s.Walls.Contains("Up")));
-                    var leftStep = steps.Find(s => (s.X == steps[i].X - 1 && s.Y == steps[i].Y && !s.Walls.Contains("Right")));
-                    var rightStep = steps.Find(s => (s.X == steps[i].X + 1 && s.Y == steps[i].Y && !s.Walls.Contains("Left")));
+                    var upStep = steps.FirstOrDefault(s => (s.Y == steps[i].Y - 1 && s.X == steps[i].X && !s.Walls.Contains("Down")));
+                    var downStep = steps.FirstOrDefault(s => (s.Y == steps[i].Y + 1 && s.X == steps[i].X && !s.Walls.Contains("Up")));
+                    var leftStep = steps.FirstOrDefault(s => (s.X == steps[i].X - 1 && s.Y == steps[i].Y && !s.Walls.Contains("Right")));
+                    var rightStep = steps.FirstOrDefault(s => (s.X == steps[i].X + 1 && s.Y == steps[i].Y && !s.Walls.Contains("Left")));
 
-                    if (upStep != null && steps.IndexOf(upStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(upStep))
+                    if (upStep != null && steps.IndexOf(upStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(upStep)) // Step up into shorter path
                     {
                         i = steps.IndexOf(upStep);
-                        steps.Add(steps[i]);
+
+                        if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
+                        {
+                            steps.Add(steps[i]);
+                            return;
+                        }
                     }
-                    if (downStep != null && steps.IndexOf(downStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(downStep))
+                    if (downStep != null && steps.IndexOf(downStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(downStep)) // Step down into shorter path
                     {
                         i = steps.IndexOf(downStep);
-                        steps.Add(steps[i]);
+
+                        if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
+                        {
+                            steps.Add(steps[i]);
+                            return;
+                        }
                     }
-                    if (leftStep != null && steps.IndexOf(leftStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(leftStep))
+                    if (leftStep != null && steps.IndexOf(leftStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(leftStep)) // Step left into shorter path
                     {
                         i = steps.IndexOf(leftStep);
-                        steps.Add(steps[i]);
+
+                        if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
+                        {
+                            steps.Add(steps[i]);
+                            return;
+                        }
                     }
-                    if (rightStep != null && steps.IndexOf(rightStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(rightStep))
+                    if (rightStep != null && steps.IndexOf(rightStep) < i && steps.IndexOf(targetSteps[j]) <= steps.IndexOf(rightStep)) // Step right into shorter path
                     {
                         i = steps.IndexOf(rightStep);
-                        steps.Add(steps[i]);
-                    }
-                    if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
-                    {
-                        if (previousPossibleSteps.Count < 2)
+
+                        if (steps[i] == targetSteps.FirstOrDefault(t => t == steps[i]))
                         {
-                            possibleSteps.Insert(0, previousPossibleSteps[j]);
+                            steps.Add(steps[i]);
+                            return;
                         }
-                        return;
                     }
+
+                    steps.Add(steps[i]);
                 }
             }
         }
 
-        private List<MazePoint> GetPossibleSteps(MazePoint[,] maze)
+        private List<MazePoint> GetPossibleSteps(MazePoint[,] maze, ref List<MazePoint> previousPossibleSteps)
         {
             var possibleSteps = new List<MazePoint>();
-            var currentStepY = steps.ElementAt(steps.Count - 1).Y;
-            var currentStepX = steps.ElementAt(steps.Count - 1).X;
+            var currentStep = steps.ElementAt(steps.Count - 1);
 
-            if (currentStepY - 1 >= 0)
+            if (currentStep.Y - 1 >= 0)
             {
-                if (!maze[currentStepY - 1, currentStepX].Walls.Contains("Down"))
+                var upStep = maze[currentStep.Y - 1, currentStep.X];
+                if (!upStep.Walls.Contains("Down"))
                 {
-                    if (!steps.Contains(maze[currentStepY - 1, currentStepX]))
+                    if (!steps.Contains(upStep))
                     {
-                        possibleSteps.Add(maze[currentStepY - 1, currentStepX]);
+                        possibleSteps.Add(upStep);
 
-                        if (!previousPossibleSteps.Contains(maze[currentStepY - 1, currentStepX]))
+                        if (!previousPossibleSteps.Contains(upStep))
                         {
-                            previousPossibleSteps.Insert(0, maze[currentStepY - 1, currentStepX]);
+                            previousPossibleSteps.Insert(0, upStep);
                         }
                     }
                 }
             }
-            if (currentStepY + 1 < maze.GetLength(0))
+            if (currentStep.Y + 1 < maze.GetLength(0))
             {
-                if (!maze[currentStepY + 1, currentStepX].Walls.Contains("Up"))
+                var downStep = maze[currentStep.Y + 1, currentStep.X];
+                if (!downStep.Walls.Contains("Up"))
                 {
-                    if (!steps.Contains(maze[currentStepY + 1, currentStepX]))
+                    if (!steps.Contains(downStep))
                     {
-                        possibleSteps.Add(maze[currentStepY + 1, currentStepX]);
+                        possibleSteps.Add(downStep);
 
-                        if (!previousPossibleSteps.Contains(maze[currentStepY + 1, currentStepX]))
+                        if (!previousPossibleSteps.Contains(downStep))
                         {
-                            previousPossibleSteps.Insert(0, maze[currentStepY + 1, currentStepX]);
+                            previousPossibleSteps.Insert(0, downStep);
                         }
                     }
                 }
             }
-            if (currentStepX - 1 >= 0)
+            if (currentStep.X - 1 >= 0)
             {
-                if (!maze[currentStepY, currentStepX - 1].Walls.Contains("Right"))
+                var leftStep = maze[currentStep.Y, currentStep.X - 1];
+                if (!leftStep.Walls.Contains("Right"))
                 {
-                    if (!steps.Contains(maze[currentStepY, currentStepX - 1]))
+                    if (!steps.Contains(leftStep))
                     {
-                        possibleSteps.Add(maze[currentStepY, currentStepX - 1]);
+                        possibleSteps.Add(leftStep);
 
-                        if (!previousPossibleSteps.Contains(maze[currentStepY, currentStepX - 1]))
+                        if (!previousPossibleSteps.Contains(leftStep))
                         {
-                            previousPossibleSteps.Insert(0, maze[currentStepY, currentStepX - 1]);
+                            previousPossibleSteps.Insert(0, leftStep);
                         }
                     }
                 }
             }
-            if (currentStepX + 1 < maze.GetLength(1))
+            if (currentStep.X + 1 < maze.GetLength(1))
             {
-                if (!maze[currentStepY, currentStepX + 1].Walls.Contains("Left"))
+                var rightStep = maze[currentStep.Y, currentStep.X + 1];
+                if (!rightStep.Walls.Contains("Left"))
                 {
-                    if (!steps.Contains(maze[currentStepY, currentStepX + 1]))
+                    if (!steps.Contains(rightStep))
                     {
-                        possibleSteps.Add(maze[currentStepY, currentStepX + 1]);
+                        possibleSteps.Add(rightStep);
 
-                        if (!previousPossibleSteps.Contains(maze[currentStepY, currentStepX + 1]))
+                        if (!previousPossibleSteps.Contains(rightStep))
                         {
-                            previousPossibleSteps.Insert(0, maze[currentStepY, currentStepX + 1]);
+                            previousPossibleSteps.Insert(0, rightStep);
                         }
                     }
                 }
@@ -240,7 +211,7 @@ namespace Maze
             return possibleSteps;
         }
 
-        public MazePoint FindStartingPoint(MazePoint[,] maze)
+        public MazePoint EnterMaze(MazePoint[,] maze)
         {
             var startingPoint = new MazePoint();
 

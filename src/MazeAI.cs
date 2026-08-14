@@ -1,11 +1,4 @@
-﻿
-
-
-
-
-
-
-using System.Drawing.Text;
+﻿using System.Drawing.Text;
 
 namespace Maze
 {

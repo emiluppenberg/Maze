@@ -1,4 +1,4 @@
-# Random maze generator with pathfinder AI.
+# Random maze generator and pathfinder algorithm.
 
 <p align="center">
     <img src="./1.png" width="32%">
